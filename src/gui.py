@@ -299,7 +299,6 @@ class SnakeGame:
     def move_snake(self):
         if not self.running or self.paused:
             return
-        # Prevent drawing if canvas is destroyed
         if not hasattr(self, 'canvas') or not self.canvas.winfo_exists():
             return
         self.direction = self.next_direction
@@ -307,11 +306,18 @@ class SnakeGame:
         dx, dy = {'Left': (-1, 0), 'Right': (1, 0),
                   'Up': (0, -1), 'Down': (0, 1)}[self.direction]
         new_head = (head[0]+dx, head[1]+dy)
-        # Wrapping for easy/medium
-        if self.level in ["easy", "medium"]:
+        if self.level == "hard":
+            # No wrapping, check wall collision
+            if (not (0 <= new_head[0] < self.width) or not (0 <= new_head[1] < self.height)) or (new_head in self.walls):
+                self.game_over()
+                return
+        else:
+            # Wrapping for easy/medium
             new_head = (new_head[0] % self.width, new_head[1] % self.height)
-        # Check collision
-        if (new_head in self.snake) or (self.level == "hard" and (not (0 <= new_head[0] < self.width) or not (0 <= new_head[1] < self.height))) or (new_head in self.walls):
+            if self.level == "medium" and (new_head in self.walls):
+                self.game_over()
+                return
+        if new_head in self.snake:
             self.game_over()
             return
         self.snake = [new_head] + self.snake
