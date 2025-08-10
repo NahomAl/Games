@@ -80,7 +80,10 @@ class TicTacToeGUI:
                     self.buttons[i][j]['fg'] = '#222831'
 
     def cell_clicked(self, row, col):
-        if hasattr(self.game, 'game_over') and self.game.game_over or self.buttons[row][col]['text']:
+        # Only allow moves if the game is not over and the cell is empty
+        if hasattr(self.game, 'game_over') and self.game.game_over:
+            return
+        if self.buttons[row][col]['text']:
             return
         if self.mode == 'AI' and getattr(self.game, 'current_player', None) == 'O':
             return
