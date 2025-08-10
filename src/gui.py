@@ -210,6 +210,12 @@ class TicTacToeGUI:
                     label.config(
                         text=f"{player}: {self.game.scores.get(player, 0)}")
 
+    def add_main_menu_button(self):
+        if not hasattr(self, 'main_menu_btn'):
+            self.main_menu_btn = tk.Button(self.root, text="Main Menu", font=('Arial Rounded MT Bold', 16, 'bold'), bg="#232b38", fg="#eeeeee",
+                                           activebackground="#393e46", activeforeground="#00e0ff", command=self.back_to_menu, relief=tk.RAISED, bd=0, cursor='hand2')
+            self.main_menu_btn.pack(pady=10)
+
 # --- SNAKE GAME ---
 
 
