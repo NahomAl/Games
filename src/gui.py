@@ -275,7 +275,7 @@ class SnakeGame:
                 while True:
                     wx, wy = random.randint(
                         0, self.width-1), random.randint(0, self.height-1)
-                    if (wx, wy) not in self.snake and (wx, wy) != self.food:
+                    if (wx, wy) not in self.snake and (wx, wy) not in walls:
                         walls.add((wx, wy))
                         break
         elif self.level == "hard":
