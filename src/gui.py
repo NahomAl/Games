@@ -144,6 +144,7 @@ class TicTacToeGUI:
         self.restart_btn = tk.Button(self.root, text="Restart", font=('Arial Rounded MT Bold', 16, 'bold'), bg="#00e0ff", fg="#181f2a",
                                      activebackground="#232b38", activeforeground="#00e0ff", command=self.restart, relief=tk.RAISED, bd=0, cursor='hand2')
         self.restart_btn.pack(pady=10)
+        self.add_main_menu_button()
 
     def restart(self):
         self.game.reset()
@@ -292,7 +293,7 @@ class SnakeGame:
         if not self.running or self.paused:
             return
         # Prevent drawing if canvas is destroyed
-        if not hasattr(self, 'canvas') or not str(self.canvas):
+        if not hasattr(self, 'canvas') or not self.canvas.winfo_exists():
             return
         self.direction = self.next_direction
         head = self.snake[0]
@@ -318,7 +319,7 @@ class SnakeGame:
 
     def draw(self):
         # Prevent drawing if canvas is destroyed
-        if not hasattr(self, 'canvas') or not str(self.canvas):
+        if not hasattr(self, 'canvas') or not self.canvas.winfo_exists():
             return
         self.canvas.delete("all")
         # Calculate offset to center the grid
@@ -384,6 +385,12 @@ class SnakeGame:
                                 text="Game Over", fill="#ff1744", font=("Arial Rounded MT Bold", 48, "bold"), anchor="center")
         self.canvas.create_text(self.width*self.cell_size//2, self.height*self.cell_size//2+60,
                                 text=f"Score: {self.score}", fill="#00e0ff", font=("Arial Rounded MT Bold", 32), anchor="center")
+
+    def add_main_menu_button(self):
+        if not hasattr(self, 'main_menu_btn'):
+            self.main_menu_btn = tk.Button(self.root, text="Main Menu", font=('Arial Rounded MT Bold', 16, 'bold'), bg="#232b38", fg="#eeeeee",
+                                           activebackground="#393e46", activeforeground="#00e0ff", command=self.back_to_menu, relief=tk.RAISED, bd=0, cursor='hand2')
+            self.main_menu_btn.pack(pady=10)
 
     def back_to_menu(self):
         for widget in self.root.winfo_children():
