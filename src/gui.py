@@ -270,16 +270,17 @@ class SnakeGame:
     def generate_walls(self):
         import random
         walls = set()
-        if self.level == "medium":
-            for _ in range(20):
+        if self.level == "hard":
+            # Hard: random internal walls
+            for _ in range(40):
                 while True:
                     wx, wy = random.randint(
-                        0, self.width-1), random.randint(0, self.height-1)
+                        1, self.width-2), random.randint(1, self.height-2)
                     if (wx, wy) not in self.snake and (wx, wy) not in walls:
                         walls.add((wx, wy))
                         break
-        elif self.level == "hard":
-            # Add border walls
+        elif self.level == "medium":
+            # Medium: border walls only
             for x in range(self.width):
                 walls.add((x, 0))
                 walls.add((x, self.height-1))
