@@ -26,7 +26,7 @@ class MainMenu:
         self.root = root
         self.root.title("Game Menu")
         self.root.configure(bg="#181f2a")
-        self.root.geometry("1200x1300")
+        self.root.geometry("900x900")
         self.frame = tk.Frame(self.root, bg="#181f2a")
         self.frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         title = tk.Label(self.frame, text="🎮 Welcome! Choose a Game", font=(
@@ -107,12 +107,11 @@ class TicTacToeGUI:
 
     def create_widgets(self):
         self.root.configure(bg="#181f2a")
-        self.root.geometry("1200x1300")
         frame = tk.Frame(self.root, bg="#181f2a")
-        frame.pack(pady=100)
+        frame.pack(pady=30)
         btn_style = {
-            'font': ('Arial Rounded MT Bold', 64, 'bold'),
-            'width': 4,
+            'font': ('Arial Rounded MT Bold', 40, 'bold'),
+            'width': 5,
             'height': 2,
             'bg': '#232b38',
             'fg': '#00e0ff',
@@ -126,23 +125,25 @@ class TicTacToeGUI:
             for j in range(3):
                 btn = tk.Button(frame, text='', command=lambda r=i,
                                 c=j: self.cell_clicked(r, c), **btn_style)
-                btn.grid(row=i, column=j, padx=18, pady=18)
+                btn.grid(row=i, column=j, padx=10, pady=10, sticky='nsew')
                 self.buttons[i][j] = btn
+        for i in range(3):
+            frame.grid_rowconfigure(i, weight=1)
+            frame.grid_columnconfigure(i, weight=1)
         self.status_label = tk.Label(self.root, text='', font=(
-            'Arial Rounded MT Bold', 32, 'bold'), bg="#181f2a", fg="#00e0ff")
-        self.status_label.pack(pady=18)
+            'Arial Rounded MT Bold', 24, 'bold'), bg="#181f2a", fg="#00e0ff")
+        self.status_label.pack(pady=10)
         score_frame = tk.Frame(self.root, bg="#181f2a")
         score_frame.pack()
         self.score_labels['X'] = tk.Label(score_frame, text='X: 0', font=(
-            'Arial Rounded MT Bold', 22, 'bold'), bg="#181f2a", fg="#eeeeee")
-        self.score_labels['X'].pack(side=tk.LEFT, padx=32)
+            'Arial Rounded MT Bold', 16, 'bold'), bg="#181f2a", fg="#eeeeee")
+        self.score_labels['X'].pack(side=tk.LEFT, padx=16)
         self.score_labels['O'] = tk.Label(score_frame, text='O: 0', font=(
-            'Arial Rounded MT Bold', 22, 'bold'), bg="#181f2a", fg="#eeeeee")
-        self.score_labels['O'].pack(side=tk.LEFT, padx=32)
-        # Add a visible Restart button
-        self.restart_btn = tk.Button(self.root, text="Restart", font=('Arial Rounded MT Bold', 22, 'bold'), bg="#00e0ff", fg="#181f2a",
+            'Arial Rounded MT Bold', 16, 'bold'), bg="#181f2a", fg="#eeeeee")
+        self.score_labels['O'].pack(side=tk.LEFT, padx=16)
+        self.restart_btn = tk.Button(self.root, text="Restart", font=('Arial Rounded MT Bold', 16, 'bold'), bg="#00e0ff", fg="#181f2a",
                                      activebackground="#232b38", activeforeground="#00e0ff", command=self.restart, relief=tk.RAISED, bd=0, cursor='hand2')
-        self.restart_btn.pack(pady=20)
+        self.restart_btn.pack(pady=10)
 
     def restart(self):
         self.game.reset()
@@ -222,9 +223,10 @@ class SnakeGame:
         self.score = 0
         self.direction = 'Right'
         self.next_direction = 'Right'
-        self.cell_size = 54
-        self.width = 36
-        self.height = 28
+        self.root.geometry("900x900")
+        self.cell_size = 22
+        self.width = 30
+        self.height = 30
         self.snake = [(18, 14), (17, 14), (16, 14)]
         self.walls = self.generate_walls() if self.level in [
             "medium", "hard"] else []
@@ -234,8 +236,7 @@ class SnakeGame:
         self.move_snake()
 
     def create_snake_widgets(self):
-        self.root.geometry(
-            f"{self.width*self.cell_size+120}x{self.height*self.cell_size+180}")
+        # Window size is set in __init__
         self.frame = tk.Frame(self.root, bg="#181f2a")
         self.frame.pack(expand=True, fill=tk.BOTH)
         self.canvas = tk.Canvas(self.frame, width=self.width*self.cell_size, height=self.height *
