@@ -188,6 +188,23 @@ class TicTacToeGUI:
             self.game.set_starting_player(starter)
         else:
             self.game.set_starting_player('X')
+            
+    def update_status(self):
+        # Update the status label with the current game state
+        if hasattr(self, 'status_label'):
+            if hasattr(self.game, 'game_over') and self.game.game_over:
+                if hasattr(self.game, 'winner') and self.game.winner:
+                    self.status_label.config(text=f"{self.game.winner} wins! 🎉")
+                else:
+                    self.status_label.config(text="It's a draw! 🤝")
+            else:
+                if hasattr(self.game, 'current_player'):
+                    self.status_label.config(text=f"{self.game.current_player}'s turn")
+            # Update scores if available
+            if hasattr(self.game, 'scores'):
+                for player, label in self.score_labels.items():
+                    label.config(text=f"{player}: {self.game.scores.get(player, 0)}")
+
 # --- SNAKE GAME ---
 
 
