@@ -307,8 +307,9 @@ class SnakeGame:
                   'Up': (0, -1), 'Down': (0, 1)}[self.direction]
         new_head = (head[0]+dx, head[1]+dy)
         if self.level == "hard":
-            # No wrapping, check wall collision
-            if (not (0 <= new_head[0] < self.width) or not (0 <= new_head[1] < self.height)) or (new_head in self.walls):
+            # Wrapping, but hitting a wall ends the game
+            new_head = (new_head[0] % self.width, new_head[1] % self.height)
+            if new_head in self.walls:
                 self.game_over()
                 return
         else:
