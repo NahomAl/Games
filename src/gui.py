@@ -239,23 +239,26 @@ class SnakeGame:
         # Window size is set in __init__
         self.frame = tk.Frame(self.root, bg="#181f2a")
         self.frame.pack(expand=True, fill=tk.BOTH)
-        self.canvas = tk.Canvas(self.frame, width=self.width*self.cell_size, height=self.height *
-                                self.cell_size, bg="#232b38", highlightthickness=12, highlightbackground="#00e0ff")
-        self.canvas.pack(pady=60)
+        # Center the canvas and make it fit well
+        canvas_size = 600
+        self.cell_size = canvas_size // self.width
+        self.canvas = tk.Canvas(self.frame, width=canvas_size, height=canvas_size,
+                                bg="#232b38", highlightthickness=12, highlightbackground="#00e0ff")
+        self.canvas.pack(pady=40)
         self.score_label = tk.Label(self.frame, text=f"Score: {self.score}", font=(
             "Arial Rounded MT Bold", 22, "bold"), bg="#181f2a", fg="#00e0ff")
         self.score_label.pack(pady=10)
         btn_frame = tk.Frame(self.frame, bg="#181f2a")
         btn_frame.pack(pady=18)
-        self.pause_btn = tk.Button(btn_frame, text="Pause", font=("Arial Rounded MT Bold", 18, "bold"), bg="#00e0ff", fg="#181f2a",
-                                   width=12, height=2, command=self.toggle_pause, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff")
-        self.pause_btn.pack(side=tk.LEFT, padx=16)
-        restart_btn = tk.Button(btn_frame, text="Restart", font=("Arial Rounded MT Bold", 18, "bold"), bg="#00e0ff", fg="#181f2a",
-                                width=12, height=2, command=self.snake_restart, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff")
-        restart_btn.pack(side=tk.LEFT, padx=16)
-        menu_btn = tk.Button(btn_frame, text="Main Menu", font=("Arial Rounded MT Bold", 18), bg="#232b38", fg="#eeeeee", width=12,
-                             height=2, command=self.back_to_menu, cursor='hand2', bd=0, activebackground="#393e46", activeforeground="#00e0ff")
-        menu_btn.pack(side=tk.LEFT, padx=16)
+        self.pause_btn = tk.Button(btn_frame, text="Pause", font=("Arial Rounded MT Bold", 16, "bold"), bg="#00e0ff", fg="#181f2a",
+                                   width=10, height=1, command=self.toggle_pause, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff")
+        self.pause_btn.pack(side=tk.LEFT, padx=10)
+        restart_btn = tk.Button(btn_frame, text="Restart", font=("Arial Rounded MT Bold", 16, "bold"), bg="#00e0ff", fg="#181f2a",
+                                width=10, height=1, command=self.snake_restart, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff")
+        restart_btn.pack(side=tk.LEFT, padx=10)
+        menu_btn = tk.Button(btn_frame, text="Main Menu", font=("Arial Rounded MT Bold", 16), bg="#232b38", fg="#eeeeee", width=10,
+                             height=1, command=self.back_to_menu, cursor='hand2', bd=0, activebackground="#393e46", activeforeground="#00e0ff")
+        menu_btn.pack(side=tk.LEFT, padx=10)
 
     def generate_walls(self):
         import random
