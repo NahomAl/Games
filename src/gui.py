@@ -291,6 +291,9 @@ class SnakeGame:
     def move_snake(self):
         if not self.running or self.paused:
             return
+        # Prevent drawing if canvas is destroyed
+        if not hasattr(self, 'canvas') or not str(self.canvas):
+            return
         self.direction = self.next_direction
         head = self.snake[0]
         dx, dy = {'Left': (-1, 0), 'Right': (1, 0),
@@ -314,20 +317,37 @@ class SnakeGame:
         self.root.after(100, self.move_snake)
 
     def draw(self):
+        # Prevent drawing if canvas is destroyed
+        if not hasattr(self, 'canvas') or not str(self.canvas):
+            return
         self.canvas.delete("all")
+        # Calculate offset to center the grid
+        offset_x = (self.canvas.winfo_width() -
+                    self.width * self.cell_size) // 2
+        offset_y = (self.canvas.winfo_height() -
+                    self.height * self.cell_size) // 2
         # Draw walls
         for wx, wy in self.walls:
-            self.canvas.create_rectangle(wx*self.cell_size, wy*self.cell_size, (wx+1)*self.cell_size,
-                                         (wy+1)*self.cell_size, fill="#181f2a", outline="#ff1744", width=3)
+            self.canvas.create_rectangle(
+                offset_x + wx*self.cell_size, offset_y + wy*self.cell_size,
+                offset_x + (wx+1)*self.cell_size, offset_y +
+                (wy+1)*self.cell_size,
+                fill="#ff0055", outline="#ff0055")
         # Draw snake
         for i, (x, y) in enumerate(self.snake):
-            color = "#00e0ff" if i == 0 else "#00adb5"
-            self.canvas.create_rectangle(x*self.cell_size+2, y*self.cell_size+2, (x+1) *
-                                         self.cell_size-2, (y+1)*self.cell_size-2, fill=color, outline="#181f2a", width=2)
+            color = "#00e0ff" if i == 0 else "#00b8d9"
+            self.canvas.create_rectangle(
+                offset_x + x*self.cell_size, offset_y + y*self.cell_size,
+                offset_x + (x+1)*self.cell_size, offset_y +
+                (y+1)*self.cell_size,
+                fill=color, outline=color)
         # Draw food
         fx, fy = self.food
-        self.canvas.create_oval(fx*self.cell_size+6, fy*self.cell_size+6, (fx+1)*self.cell_size-6,
-                                (fy+1)*self.cell_size-6, fill="#ff5722", outline="#fff", width=2)
+        self.canvas.create_oval(
+            offset_x + fx*self.cell_size + 4, offset_y + fy*self.cell_size + 4,
+            offset_x + (fx+1)*self.cell_size - 4, offset_y +
+            (fy+1)*self.cell_size - 4,
+            fill="#ffcc00", outline="#ffcc00")
 
     def snake_restart(self):
         self.running = True
