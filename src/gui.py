@@ -216,6 +216,14 @@ class TicTacToeGUI:
                                            activebackground="#393e46", activeforeground="#00e0ff", command=self.back_to_menu, relief=tk.RAISED, bd=0, cursor='hand2')
             self.main_menu_btn.pack(pady=10)
 
+    def ai_move(self):
+        # Simple AI: make a move for 'O' using minimax or random
+        if hasattr(self.game, 'ai_move'):
+            move = self.game.ai_move()
+            if move:
+                row, col = move
+                self.cell_clicked(row, col)
+
 # --- SNAKE GAME ---
 
 
@@ -412,12 +420,12 @@ class SnakeGame:
         MainMenu(self.root)
 
     def ai_move(self):
-        move = self.game.ai_move()
-        if move:
-            row, col = move
-            self.animate_button(row, col)
-            self.update_board()
-            self.update_status()
+        # Simple AI: make a move for 'O' using minimax or random
+        if hasattr(self.game, 'ai_move'):
+            move = self.game.ai_move()
+            if move:
+                row, col = move
+                self.cell_clicked(row, col)
 
     def animate_button(self, row, col):
         btn = self.buttons[row][col]
