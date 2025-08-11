@@ -231,7 +231,7 @@ class TicTacToeGUI:
 
 
 class SnakeGame:
-    high_score = 0
+    high_scores = {"easy": 0, "medium": 0, "hard": 0}
 
     def __init__(self, root, show_menu=False, level="easy"):
         self.root = root
@@ -268,7 +268,7 @@ class SnakeGame:
         self.score_label = tk.Label(self.frame, text=f"Score: {self.score}", font=(
             "Arial Rounded MT Bold", 22, "bold"), bg="#181f2a", fg="#00e0ff")
         self.score_label.pack(pady=10)
-        self.high_score_label = tk.Label(self.frame, text=f"High Score: {SnakeGame.high_score}", font=(
+        self.high_score_label = tk.Label(self.frame, text=f"High Score: {SnakeGame.high_scores[self.level]}", font=(
             "Arial Rounded MT Bold", 16, "bold"), bg="#181f2a", fg="#ffcc00")
         self.high_score_label.pack(pady=2)
         btn_frame = tk.Frame(self.frame, bg="#181f2a")
@@ -340,10 +340,10 @@ class SnakeGame:
         self.snake = [new_head] + self.snake
         if new_head == self.food:
             self.score += 1
-            if self.score > SnakeGame.high_score:
-                SnakeGame.high_score = self.score
+            if self.score > SnakeGame.high_scores[self.level]:
+                SnakeGame.high_scores[self.level] = self.score
                 self.high_score_label.config(
-                    text=f"High Score: {SnakeGame.high_score}")
+                    text=f"High Score: {SnakeGame.high_scores[self.level]}")
             self.food = self.place_food()
             self.score_label.config(text=f"Score: {self.score}")
         else:
@@ -396,7 +396,7 @@ class SnakeGame:
         self.food = self.place_food()
         self.score_label.config(text=f"Score: {self.score}")
         self.high_score_label.config(
-            text=f"High Score: {SnakeGame.high_score}")
+            text=f"High Score: {SnakeGame.high_scores[self.level]}")
         self.draw()
         self.move_snake()
 
