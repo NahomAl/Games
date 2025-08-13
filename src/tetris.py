@@ -92,8 +92,8 @@ class Tetris:
         lines_cleared = self.ROWS - len(new_board)
         for _ in range(lines_cleared):
             new_board.insert(0, [0]*self.COLS)
-        if not self.collision(self.x, self.y, rotated):
-            self.board = new_board
+        self.board = new_board
+        if lines_cleared > 0:
             self.score += lines_cleared * 100
             self.score_label.config(text=f"Score: {self.score}")
 
