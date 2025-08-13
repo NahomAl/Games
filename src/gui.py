@@ -48,9 +48,15 @@ class MainMenu:
         tetris_btn = tk.Button(self.frame, text="Tetris 🟦",
                                command=self.start_tetris, **btn_style)
         tetris_btn.pack(pady=20)
+
+        # Paul's Restart Ad
+        ad_label = tk.Label(self.frame, text="🔥 Paul's Restart Ad: Click Restart in any game to play again instantly! 🔥", font=(
+            "Arial Rounded MT Bold", 18, "bold"), bg="#181f2a", fg="#ffcc00", wraplength=700, justify="center", pady=20)
+        ad_label.pack(pady=(40, 10))
+
         quit_btn = tk.Button(self.frame, text="Quit", font=("Arial Rounded MT Bold", 22), bg="#232b38", fg="#eeeeee", width=12,
                              height=1, command=self.root.quit, cursor='hand2', activebackground="#393e46", activeforeground="#00e0ff", bd=0)
-        quit_btn.pack(pady=(60, 30))
+        quit_btn.pack(pady=(20, 30))
 
 
 """

@@ -51,7 +51,27 @@ class Tetris:
         self.new_piece()
         self.root.bind('<Key>', self.on_key)
         self.running = True
+
+        # Add Restart and Main Menu buttons
+        btn_frame = tk.Frame(self.frame, bg="#181f2a")
+        btn_frame.pack(pady=10)
+        restart_btn = tk.Button(btn_frame, text="Restart", font=("Arial Rounded MT Bold", 16, "bold"), bg="#00e0ff", fg="#181f2a",
+                                width=10, height=1, command=self.restart, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff")
+        restart_btn.pack(side=tk.LEFT, padx=10)
+        menu_btn = tk.Button(btn_frame, text="Main Menu", font=("Arial Rounded MT Bold", 16, "bold"), bg="#232b38", fg="#eeeeee",
+                             width=10, height=1, command=self.back_to_menu, cursor='hand2', bd=0, activebackground="#393e46", activeforeground="#00e0ff")
+        menu_btn.pack(side=tk.LEFT, padx=10)
+
         self.drop()
+
+    def restart(self):
+        self.frame.destroy()
+        Tetris(self.root, show_menu=True)
+
+    def back_to_menu(self):
+        self.frame.destroy()
+        from gui import MainMenu
+        MainMenu(self.root)
 
     def new_piece(self):
         self.shape = self.next_shape
