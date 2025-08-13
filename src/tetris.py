@@ -1,0 +1,136 @@
+import tkinter as tk
+import random
+
+
+class Tetris:
+    ROWS = 20
+    COLS = 10
+    CELL = 30
+    SHAPES = [
+        [[1, 1, 1, 1]],  # I
+        [[1, 1], [1, 1]],  # O
+        [[0, 1, 0], [1, 1, 1]],  # T
+        [[1, 1, 0], [0, 1, 1]],  # S
+        [[0, 1, 1], [1, 1, 0]],  # Z
+        [[1, 0, 0], [1, 1, 1]],  # J
+        [[0, 0, 1], [1, 1, 1]],  # L
+    ]
+    COLORS = ["#00e0ff", "#ffcc00", "#ff0055",
+              "#00ffb0", "#b388ff", "#ffb300", "#00b8d9"]
+
+    def __init__(self, root, show_menu=False):
+        self.root = root
+        self.root.title("Tetris")
+        self.frame = tk.Frame(self.root, bg="#181f2a")
+        self.frame.pack(expand=True, fill=tk.BOTH)
+        self.canvas = tk.Canvas(
+            self.frame, width=self.COLS*self.CELL, height=self.ROWS*self.CELL, bg="#232b38")
+        self.canvas.pack(pady=20)
+        self.score = 0
+        self.score_label = tk.Label(self.frame, text=f"Score: {self.score}", font=(
+            "Arial Rounded MT Bold", 18, "bold"), bg="#181f2a", fg="#00e0ff")
+        self.score_label.pack()
+        self.board = [[0]*self.COLS for _ in range(self.ROWS)]
+        self.shape = None
+        self.color = None
+        self.x = 0
+        self.y = 0
+        self.next_shape = random.choice(self.SHAPES)
+        self.next_color = random.choice(self.COLORS)
+        self.next_canvas = tk.Canvas(self.frame, width=6*self.CELL, height=4*self.CELL,
+                                     bg="#232b38", highlightthickness=2, highlightbackground="#00e0ff")
+        self.next_canvas.pack(pady=5)
+        self.next_label = tk.Label(self.frame, text="Next:", font=(
+            "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#00e0ff")
+        self.next_label.pack()
+        self.new_piece()
+        self.root.bind('<Key>', self.on_key)
+        self.running = True
+        self.drop()
+
+    def new_piece(self):
+        self.shape = self.next_shape
+        self.color = self.next_color
+        self.next_shape = random.choice(self.SHAPES)
+        self.next_color = random.choice(self.COLORS)
+        self.x = self.COLS // 2 - len(self.shape[0]) // 2
+        self.y = 0
+        self.draw_next()
+        if self.collision(self.x, self.y, self.shape):
+            self.running = False
+            self.canvas.create_text(self.COLS*self.CELL//2, self.ROWS*self.CELL//2, text="Game Over",
+                                    fill="#ff1744", font=("Arial Rounded MT Bold", 32, "bold"), anchor="center")
+
+    def collision(self, x, y, shape):
+        for i, row in enumerate(self.shape):
+            for j, cell in enumerate(row):
+                if cell:
+                    self.board[self.y + i][self.x + j] = self.color
+
+    def clear_lines(self):
+        new_board = [row for row in self.board if any(
+            cell == 0 for cell in row)]
+        lines_cleared = self.ROWS - len(new_board)
+        for _ in range(lines_cleared):
+            new_board.insert(0, [0]*self.COLS)
+        self.board = new_board
+        self.score += lines_cleared * 100
+        self.score_label.config(text=f"Score: {self.score}")
+
+    def rotate(self):
+        rotated = [list(row) for row in zip(*self.shape[::-1])]
+        if not self.collision(self.x, self.y, rotated):
+            self.shape = rotated
+
+    def move(self, dx):
+        if not self.collision(self.x + dx, self.y, self.shape):
+            self.x += dx
+            self.draw()
+
+    def drop(self):
+        if not self.running:
+            return
+        if not self.collision(self.x, self.y + 1, self.shape):
+            self.y += 1
+        else:
+            self.merge()
+            self.clear_lines()
+            self.new_piece()
+        self.draw()
+        if self.running:
+            self.root.after(300, self.drop)
+
+    def on_key(self, event):
+        if not self.running:
+            return
+        if event.keysym == 'Left':
+            self.move(-1)
+        elif event.keysym == 'Right':
+            self.move(1)
+        elif event.keysym == 'Down':
+            if not self.collision(self.x, self.y + 1, self.shape):
+                self.y += 1
+                self.draw()
+        elif event.keysym == 'Up':
+            self.rotate()
+            self.draw()
+        elif event.keysym == 'space':
+            while not self.collision(self.x, self.y + 1, self.shape):
+                self.y += 1
+            self.draw()
+
+    def draw(self):
+        self.canvas.delete("all")
+        # Draw board
+        for i in range(self.ROWS):
+            for j in range(self.COLS):
+                color = self.board[i][j]
+                if color:
+                    self.canvas.create_rectangle(
+                        j*self.CELL, i*self.CELL, (j+1)*self.CELL, (i+1)*self.CELL, fill=color, outline="#222831")
+        # Draw current piece
+        for i, row in enumerate(self.shape):
+            for j, cell in enumerate(row):
+                if cell:
+                    self.canvas.create_rectangle((self.x+j)*self.CELL, (self.y+i)*self.CELL, (
+                        self.x+j+1)*self.CELL, (self.y+i+1)*self.CELL, fill=self.color, outline="#eeeeee")

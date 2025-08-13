@@ -3,6 +3,7 @@ import random
 from game_logic import TicTacToe
 from tkinter import messagebox, simpledialog
 import tkinter as tk
+from tetris import Tetris
 
 
 class MainMenu:
@@ -22,6 +23,10 @@ class MainMenu:
             level = "easy"
         SnakeGame(self.root, show_menu=True, level=level)
 
+    def start_tetris(self):
+        self.frame.destroy()
+        Tetris(self.root, show_menu=True)
+
     def __init__(self, root):
         self.root = root
         self.root.title("Game Menu")
@@ -40,6 +45,9 @@ class MainMenu:
         snake_btn = tk.Button(self.frame, text="Snake 🐍",
                               command=self.start_snake, **btn_style)
         snake_btn.pack(pady=20)
+        tetris_btn = tk.Button(self.frame, text="Tetris 🟦",
+                               command=self.start_tetris, **btn_style)
+        tetris_btn.pack(pady=20)
         quit_btn = tk.Button(self.frame, text="Quit", font=("Arial Rounded MT Bold", 22), bg="#232b38", fg="#eeeeee", width=12,
                              height=1, command=self.root.quit, cursor='hand2', activebackground="#393e46", activeforeground="#00e0ff", bd=0)
         quit_btn.pack(pady=(60, 30))
@@ -427,11 +435,6 @@ class SnakeGame:
             self.main_menu_btn = tk.Button(self.root, text="Main Menu", font=('Arial Rounded MT Bold', 16, 'bold'), bg="#232b38", fg="#eeeeee",
                                            activebackground="#393e46", activeforeground="#00e0ff", command=self.back_to_menu, relief=tk.RAISED, bd=0, cursor='hand2')
             self.main_menu_btn.pack(pady=10)
-
-    def back_to_menu(self):
-        for widget in self.root.winfo_children():
-            widget.destroy()
-        MainMenu(self.root)
 
     def ai_move(self):
         # Simple AI: make a move for 'O' using minimax or random
