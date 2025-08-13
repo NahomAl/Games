@@ -23,13 +23,19 @@ class Tetris:
         self.root.title("Tetris")
         self.frame = tk.Frame(self.root, bg="#181f2a")
         self.frame.pack(expand=True, fill=tk.BOTH)
-        self.canvas = tk.Canvas(
-            self.frame, width=self.COLS*self.CELL, height=self.ROWS*self.CELL, bg="#232b38")
-        self.canvas.pack(pady=20)
         self.score = 0
         self.score_label = tk.Label(self.frame, text=f"Score: {self.score}", font=(
             "Arial Rounded MT Bold", 18, "bold"), bg="#181f2a", fg="#00e0ff")
         self.score_label.pack()
+        self.next_label = tk.Label(self.frame, text="Next:", font=(
+            "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#00e0ff")
+        self.next_label.pack()
+        self.next_canvas = tk.Canvas(self.frame, width=6*self.CELL, height=4*self.CELL,
+                                     bg="#232b38", highlightthickness=2, highlightbackground="#00e0ff")
+        self.next_canvas.pack(pady=5)
+        self.canvas = tk.Canvas(
+            self.frame, width=self.COLS*self.CELL, height=self.ROWS*self.CELL, bg="#232b38")
+        self.canvas.pack(pady=20)
         self.board = [[0]*self.COLS for _ in range(self.ROWS)]
         self.shape = None
         self.color = None
@@ -37,12 +43,6 @@ class Tetris:
         self.y = 0
         self.next_shape = random.choice(self.SHAPES)
         self.next_color = random.choice(self.COLORS)
-        self.next_canvas = tk.Canvas(self.frame, width=6*self.CELL, height=4*self.CELL,
-                                     bg="#232b38", highlightthickness=2, highlightbackground="#00e0ff")
-        self.next_canvas.pack(pady=5)
-        self.next_label = tk.Label(self.frame, text="Next:", font=(
-            "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#00e0ff")
-        self.next_label.pack()
         self.new_piece()
         self.root.bind('<Key>', self.on_key)
         self.running = True
@@ -61,7 +61,26 @@ class Tetris:
             self.canvas.create_text(self.COLS*self.CELL//2, self.ROWS*self.CELL//2, text="Game Over",
                                     fill="#ff1744", font=("Arial Rounded MT Bold", 32, "bold"), anchor="center")
 
+    def draw_next(self):
+        self.next_canvas.delete("all")
+        for i, row in enumerate(self.next_shape):
+            for j, cell in enumerate(row):
+                if cell:
+                    self.next_canvas.create_rectangle(
+                        (j+1)*self.CELL, (i+1)*self.CELL,
+                        (j+2)*self.CELL, (i+2)*self.CELL,
+                        fill=self.next_color, outline="#eeeeee")
+
     def collision(self, x, y, shape):
+        for i, row in enumerate(shape):
+            for j, cell in enumerate(row):
+                if cell:
+                    nx, ny = x + j, y + i
+                    if nx < 0 or nx >= self.COLS or ny >= self.ROWS or (ny >= 0 and self.board[ny][nx]):
+                        return True
+        return False
+
+    def merge(self):
         for i, row in enumerate(self.shape):
             for j, cell in enumerate(row):
                 if cell:
@@ -73,9 +92,10 @@ class Tetris:
         lines_cleared = self.ROWS - len(new_board)
         for _ in range(lines_cleared):
             new_board.insert(0, [0]*self.COLS)
-        self.board = new_board
-        self.score += lines_cleared * 100
-        self.score_label.config(text=f"Score: {self.score}")
+        if not self.collision(self.x, self.y, rotated):
+            self.board = new_board
+            self.score += lines_cleared * 100
+            self.score_label.config(text=f"Score: {self.score}")
 
     def rotate(self):
         rotated = [list(row) for row in zip(*self.shape[::-1])]
@@ -127,10 +147,14 @@ class Tetris:
                 color = self.board[i][j]
                 if color:
                     self.canvas.create_rectangle(
-                        j*self.CELL, i*self.CELL, (j+1)*self.CELL, (i+1)*self.CELL, fill=color, outline="#222831")
+                        j*self.CELL, i*self.CELL,
+                        (j+1)*self.CELL, (i+1)*self.CELL,
+                        fill=color, outline="#222831")
         # Draw current piece
         for i, row in enumerate(self.shape):
             for j, cell in enumerate(row):
                 if cell:
-                    self.canvas.create_rectangle((self.x+j)*self.CELL, (self.y+i)*self.CELL, (
-                        self.x+j+1)*self.CELL, (self.y+i+1)*self.CELL, fill=self.color, outline="#eeeeee")
+                    self.canvas.create_rectangle(
+                        (self.x+j)*self.CELL, (self.y+i)*self.CELL,
+                        (self.x+j+1)*self.CELL, (self.y+i+1)*self.CELL,
+                        fill=self.color, outline="#eeeeee")
