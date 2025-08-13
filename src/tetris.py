@@ -3,6 +3,7 @@ import random
 
 
 class Tetris:
+    HIGHSCORE_FILE = "tetris_highscore.txt"
     ROWS = 20
     COLS = 10
     CELL = 30
@@ -24,9 +25,13 @@ class Tetris:
         self.frame = tk.Frame(self.root, bg="#181f2a")
         self.frame.pack(expand=True, fill=tk.BOTH)
         self.score = 0
+        self.highscore = self.load_highscore()
         self.score_label = tk.Label(self.frame, text=f"Score: {self.score}", font=(
             "Arial Rounded MT Bold", 18, "bold"), bg="#181f2a", fg="#00e0ff")
         self.score_label.pack()
+        self.highscore_label = tk.Label(self.frame, text=f"High Score: {self.highscore}", font=(
+            "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#ffcc00")
+        self.highscore_label.pack()
         self.next_label = tk.Label(self.frame, text="Next:", font=(
             "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#00e0ff")
         self.next_label.pack()
@@ -60,6 +65,13 @@ class Tetris:
             self.running = False
             self.canvas.create_text(self.COLS*self.CELL//2, self.ROWS*self.CELL//2, text="Game Over",
                                     fill="#ff1744", font=("Arial Rounded MT Bold", 32, "bold"), anchor="center")
+            if self.score > self.highscore:
+                self.highscore = self.score
+                self.save_highscore(self.highscore)
+                self.highscore_label.config(
+                    text=f"High Score: {self.highscore}")
+                self.canvas.create_text(self.COLS*self.CELL//2, self.ROWS*self.CELL//2+40, text="New High Score!",
+                                        fill="#ffcc00", font=("Arial Rounded MT Bold", 20, "bold"), anchor="center")
 
     def draw_next(self):
         self.next_canvas.delete("all")
@@ -96,6 +108,25 @@ class Tetris:
         if lines_cleared > 0:
             self.score += lines_cleared * 100
             self.score_label.config(text=f"Score: {self.score}")
+            if self.score > self.highscore:
+                self.highscore = self.score
+                self.save_highscore(self.highscore)
+                self.highscore_label.config(
+                    text=f"High Score: {self.highscore}")
+
+    def load_highscore(self):
+        try:
+            with open(self.HIGHSCORE_FILE, "r") as f:
+                return int(f.read().strip())
+        except Exception:
+            return 0
+
+    def save_highscore(self, score):
+        try:
+            with open(self.HIGHSCORE_FILE, "w") as f:
+                f.write(str(score))
+        except Exception:
+            pass
 
     def rotate(self):
         rotated = [list(row) for row in zip(*self.shape[::-1])]
