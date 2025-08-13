@@ -182,10 +182,17 @@ class Tetris:
                         (j+1)*self.CELL, (i+1)*self.CELL,
                         fill=color, outline="#222831")
         # Draw current piece
-        for i, row in enumerate(self.shape):
-            for j, cell in enumerate(row):
-                if cell:
-                    self.canvas.create_rectangle(
-                        (self.x+j)*self.CELL, (self.y+i)*self.CELL,
-                        (self.x+j+1)*self.CELL, (self.y+i+1)*self.CELL,
-                        fill=self.color, outline="#eeeeee")
+        if self.running:
+            for i, row in enumerate(self.shape):
+                for j, cell in enumerate(row):
+                    if cell:
+                        self.canvas.create_rectangle(
+                            (self.x+j)*self.CELL, (self.y+i)*self.CELL,
+                            (self.x+j+1)*self.CELL, (self.y+i+1)*self.CELL,
+                            fill=self.color, outline="#eeeeee")
+        else:
+            self.canvas.create_text(self.COLS*self.CELL//2, self.ROWS*self.CELL//2, text="Game Over",
+                                    fill="#ff1744", font=("Arial Rounded MT Bold", 32, "bold"), anchor="center")
+            if self.score >= self.highscore:
+                self.canvas.create_text(self.COLS*self.CELL//2, self.ROWS*self.CELL//2+40, text="New High Score!",
+                                        fill="#ffcc00", font=("Arial Rounded MT Bold", 20, "bold"), anchor="center")
