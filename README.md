@@ -100,6 +100,7 @@ pipenv run python -m unittest discover -s tests
 
 - **Tic-Tac-Toe**: Classic 2-player or vs AI mode. Try to get three in a row—horizontally, vertically, or diagonally! ❌⭕
 - **Snake**: Guide the snake, eat food, and avoid walls and yourself. Choose your difficulty: Easy, Medium, or Hard! 🐍
+- **Tetris**: Stack falling blocks, clear lines, and aim for a high score! Classic arcade action with adjustable speed. 🟦⬜ 
 
 ---
 
