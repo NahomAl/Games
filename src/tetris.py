@@ -26,21 +26,30 @@ class Tetris:
         self.frame.pack(expand=True, fill=tk.BOTH)
         self.score = 0
         self.highscore = self.load_highscore()
-        self.score_label = tk.Label(self.frame, text=f"Score: {self.score}", font=(
+        # Main horizontal layout
+        self.main_area = tk.Frame(self.frame, bg="#181f2a")
+        self.main_area.pack(pady=10)
+        # Board on the left
+        self.board_area = tk.Frame(self.main_area, bg="#181f2a")
+        self.board_area.pack(side=tk.LEFT, padx=10)
+        self.canvas = tk.Canvas(
+            self.board_area, width=self.COLS*self.CELL, height=self.ROWS*self.CELL, bg="#232b38")
+        self.canvas.pack()
+        # Side area on the right
+        self.side_area = tk.Frame(self.main_area, bg="#181f2a")
+        self.side_area.pack(side=tk.LEFT, padx=20, anchor="n")
+        self.score_label = tk.Label(self.side_area, text=f"Score: {self.score}", font=(
             "Arial Rounded MT Bold", 18, "bold"), bg="#181f2a", fg="#00e0ff")
-        self.score_label.pack()
-        self.highscore_label = tk.Label(self.frame, text=f"High Score: {self.highscore}", font=(
+        self.score_label.pack(pady=(0, 10))
+        self.highscore_label = tk.Label(self.side_area, text=f"High Score: {self.highscore}", font=(
             "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#ffcc00")
-        self.highscore_label.pack()
-        self.next_label = tk.Label(self.frame, text="Next:", font=(
+        self.highscore_label.pack(pady=(0, 20))
+        self.next_label = tk.Label(self.side_area, text="Next:", font=(
             "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#00e0ff")
         self.next_label.pack()
-        self.next_canvas = tk.Canvas(self.frame, width=6*self.CELL, height=4*self.CELL,
+        self.next_canvas = tk.Canvas(self.side_area, width=6*self.CELL, height=4*self.CELL,
                                      bg="#232b38", highlightthickness=2, highlightbackground="#00e0ff")
         self.next_canvas.pack(pady=5)
-        self.canvas = tk.Canvas(
-            self.frame, width=self.COLS*self.CELL, height=self.ROWS*self.CELL, bg="#232b38")
-        self.canvas.pack(pady=20)
         self.board = [[0]*self.COLS for _ in range(self.ROWS)]
         self.shape = None
         self.color = None
@@ -52,15 +61,31 @@ class Tetris:
         self.root.bind('<Key>', self.on_key)
         self.running = True
 
-        # Add Restart and Main Menu buttons
+        # Add Pause, Restart, and Main Menu buttons
         btn_frame = tk.Frame(self.frame, bg="#181f2a")
         btn_frame.pack(pady=10)
+        pause_btn = tk.Button(btn_frame, text="Pause", font=("Arial Rounded MT Bold", 16, "bold"), bg="#ffcc00", fg="#181f2a",
+                              width=10, height=1, command=self.toggle_pause, cursor='hand2', bd=0, activebackground="#ffe066", activeforeground="#181f2a")
+        pause_btn.pack(side=tk.LEFT, padx=10)
         restart_btn = tk.Button(btn_frame, text="Restart", font=("Arial Rounded MT Bold", 16, "bold"), bg="#00e0ff", fg="#181f2a",
                                 width=10, height=1, command=self.restart, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff")
         restart_btn.pack(side=tk.LEFT, padx=10)
         menu_btn = tk.Button(btn_frame, text="Main Menu", font=("Arial Rounded MT Bold", 16, "bold"), bg="#232b38", fg="#eeeeee",
                              width=10, height=1, command=self.back_to_menu, cursor='hand2', bd=0, activebackground="#393e46", activeforeground="#00e0ff")
         menu_btn.pack(side=tk.LEFT, padx=10)
+
+    def toggle_pause(self):
+        if not hasattr(self, 'paused'):
+            self.paused = False
+        self.paused = not getattr(self, 'paused', False)
+        if self.paused:
+            self.running_before_pause = self.running
+            self.running = False
+            self.canvas.create_text(self.COLS*self.CELL//2, self.ROWS*self.CELL//2, text="Paused",
+                                    fill="#ffcc00", font=("Arial Rounded MT Bold", 32, "bold"), anchor="center")
+        else:
+            self.running = getattr(self, 'running_before_pause', True)
+            self.draw()
 
         self.drop()
 
@@ -172,7 +197,11 @@ class Tetris:
             self.root.after(300, self.drop)
 
     def on_key(self, event):
-        if not self.running:
+        # Pause/Resume with P or Escape
+        if event.keysym.lower() in ['p', 'escape']:
+            self.toggle_pause()
+            return
+        if not self.running or getattr(self, 'paused', False):
             return
         if event.keysym == 'Left':
             self.move(-1)
