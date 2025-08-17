@@ -26,30 +26,50 @@ class Tetris:
         self.frame.pack(expand=True, fill=tk.BOTH)
         self.score = 0
         self.highscore = self.load_highscore()
+        self.root.geometry(f"700x700")
+        self.root.configure(bg="#181f2a")
+        self.frame.pack_propagate(False)
+        self.frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
         # Main horizontal layout
         self.main_area = tk.Frame(self.frame, bg="#181f2a")
-        self.main_area.pack(pady=10)
+        self.main_area.pack(expand=True)
         # Board on the left
         self.board_area = tk.Frame(self.main_area, bg="#181f2a")
-        self.board_area.pack(side=tk.LEFT, padx=10)
+        self.board_area.pack(side=tk.LEFT, padx=(30, 10), pady=30)
         self.canvas = tk.Canvas(
-            self.board_area, width=self.COLS*self.CELL, height=self.ROWS*self.CELL, bg="#232b38")
+            self.board_area, width=self.COLS*self.CELL, height=self.ROWS*self.CELL, bg="#232b38",
+            highlightthickness=3, highlightbackground="#eeeeee")
         self.canvas.pack()
         # Side area on the right
         self.side_area = tk.Frame(self.main_area, bg="#181f2a")
-        self.side_area.pack(side=tk.LEFT, padx=20, anchor="n")
+        self.side_area.pack(side=tk.LEFT, padx=(10, 30), pady=30, anchor="n")
         self.score_label = tk.Label(self.side_area, text=f"Score: {self.score}", font=(
-            "Arial Rounded MT Bold", 18, "bold"), bg="#181f2a", fg="#00e0ff")
-        self.score_label.pack(pady=(0, 10))
+            "Arial Rounded MT Bold", 22, "bold"), bg="#181f2a", fg="#00e0ff")
+        self.score_label.pack(pady=(0, 8))
         self.highscore_label = tk.Label(self.side_area, text=f"High Score: {self.highscore}", font=(
-            "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#ffcc00")
-        self.highscore_label.pack(pady=(0, 20))
+            "Arial Rounded MT Bold", 16, "bold"), bg="#181f2a", fg="#ffcc00")
+        self.highscore_label.pack(pady=(0, 18))
         self.next_label = tk.Label(self.side_area, text="Next:", font=(
-            "Arial Rounded MT Bold", 14, "bold"), bg="#181f2a", fg="#00e0ff")
+            "Arial Rounded MT Bold", 16, "bold"), bg="#181f2a", fg="#00e0ff")
         self.next_label.pack()
         self.next_canvas = tk.Canvas(self.side_area, width=6*self.CELL, height=4*self.CELL,
                                      bg="#232b38", highlightthickness=2, highlightbackground="#00e0ff")
-        self.next_canvas.pack(pady=5)
+        self.next_canvas.pack(pady=8)
+
+        # Add Pause, Restart, and Main Menu buttons
+        btn_frame = tk.Frame(self.frame, bg="#181f2a")
+        btn_frame.pack(pady=(10, 30))
+        pause_btn = tk.Button(btn_frame, text="Pause", font=("Arial Rounded MT Bold", 18, "bold"), bg="#ffcc00", fg="#181f2a",
+                              width=10, height=2, command=self.toggle_pause, cursor='hand2', bd=0, activebackground="#ffe066", activeforeground="#181f2a", relief=tk.FLAT)
+        pause_btn.pack(side=tk.LEFT, padx=12)
+        restart_btn = tk.Button(btn_frame, text="Restart", font=("Arial Rounded MT Bold", 18, "bold"), bg="#00e0ff", fg="#181f2a",
+                                width=10, height=2, command=self.restart, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff", relief=tk.FLAT)
+        restart_btn.pack(side=tk.LEFT, padx=12)
+        menu_btn = tk.Button(btn_frame, text="Main Menu", font=("Arial Rounded MT Bold", 18, "bold"), bg="#232b38", fg="#eeeeee",
+                             width=10, height=2, command=self.back_to_menu, cursor='hand2', bd=0, activebackground="#393e46", activeforeground="#00e0ff", relief=tk.FLAT)
+        menu_btn.pack(side=tk.LEFT, padx=12)
+
         self.board = [[0]*self.COLS for _ in range(self.ROWS)]
         self.shape = None
         self.color = None
@@ -60,19 +80,6 @@ class Tetris:
         self.new_piece()
         self.root.bind('<Key>', self.on_key)
         self.running = True
-
-        # Add Pause, Restart, and Main Menu buttons
-        btn_frame = tk.Frame(self.frame, bg="#181f2a")
-        btn_frame.pack(pady=10)
-        pause_btn = tk.Button(btn_frame, text="Pause", font=("Arial Rounded MT Bold", 16, "bold"), bg="#ffcc00", fg="#181f2a",
-                              width=10, height=1, command=self.toggle_pause, cursor='hand2', bd=0, activebackground="#ffe066", activeforeground="#181f2a")
-        pause_btn.pack(side=tk.LEFT, padx=10)
-        restart_btn = tk.Button(btn_frame, text="Restart", font=("Arial Rounded MT Bold", 16, "bold"), bg="#00e0ff", fg="#181f2a",
-                                width=10, height=1, command=self.restart, cursor='hand2', bd=0, activebackground="#00b8d9", activeforeground="#fff")
-        restart_btn.pack(side=tk.LEFT, padx=10)
-        menu_btn = tk.Button(btn_frame, text="Main Menu", font=("Arial Rounded MT Bold", 16, "bold"), bg="#232b38", fg="#eeeeee",
-                             width=10, height=1, command=self.back_to_menu, cursor='hand2', bd=0, activebackground="#393e46", activeforeground="#00e0ff")
-        menu_btn.pack(side=tk.LEFT, padx=10)
 
     def toggle_pause(self):
         if not hasattr(self, 'paused'):
